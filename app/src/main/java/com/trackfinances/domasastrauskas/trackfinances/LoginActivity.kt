@@ -3,25 +3,33 @@ package com.trackfinances.domasastrauskas.trackfinances
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.trackfinances.domasastrauskas.trackfinances.globals.AuthToken
+import com.trackfinances.domasastrauskas.trackfinances.globals.GlobalUsers
 import com.trackfinances.domasastrauskas.trackfinances.model.UserAuth
 import kotlinx.android.synthetic.main.activity_login.*
+import org.json.JSONObject
+import java.lang.reflect.Type
 
 class LoginActivity : AppCompatActivity() {
 
     var globalAuthToken = AuthToken.Token
+    val globalUsers = GlobalUsers.Users
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,9 +87,11 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun parseNetworkResponse(response: NetworkResponse?): Response<String> {
-                println("Auth token: ${response?.headers?.get("Authorization")}")
-                if (response?.headers?.get("Authorization") != null && response?.statusCode == 200) {
-                    globalAuthToken.authToken = response?.headers?.get("Authorization")
+                val authToken = response?.headers?.get("Authorization")
+                if (authToken != null && response.statusCode == 200) {
+                    globalAuthToken.authToken = authToken
+                    getCurrentUser(authToken)
+
                     val dashboardActivity = Intent(applicationContext, DashboardActivity::class.java)
                     startActivity(dashboardActivity)
                     finish()
@@ -91,5 +101,31 @@ class LoginActivity : AppCompatActivity() {
         }
 
         queue.add(stringRequest)
+    }
+
+    private fun getCurrentUser(authToken: String) {
+        val currentUserUrl = getString(R.string.backendUrl) + "/users/current"
+        val volleyQueue: RequestQueue? = Volley.newRequestQueue(applicationContext)
+
+        val request = object : JsonObjectRequest(Request.Method.GET, currentUserUrl, null,
+            Response.Listener<JSONObject> { response ->
+                println("Current user resp: $response")
+                val userJson = response.toString()
+                val type: Type = object : TypeToken<GlobalUsers.Users>() {}.type
+                globalUsers.users = Gson().fromJson(userJson, type)
+            },
+            Response.ErrorListener { error ->
+                println("Current user ERR: $error")
+            }
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Authorization"] = authToken
+
+                return headers
+            }
+        }
+
+        volleyQueue?.add(request);
     }
 }
