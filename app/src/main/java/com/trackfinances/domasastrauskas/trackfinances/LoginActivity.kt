@@ -27,7 +27,7 @@ import java.lang.reflect.Type
 
 class LoginActivity : AppCompatActivity() {
 
-    var globalAuthToken = AuthToken.Token
+    val globalAuthToken = AuthToken.Token
     val globalUsers = GlobalUsers.Users
 
 
@@ -91,10 +91,6 @@ class LoginActivity : AppCompatActivity() {
                 if (authToken != null && response.statusCode == 200) {
                     globalAuthToken.authToken = authToken
                     getCurrentUser(authToken)
-
-                    val dashboardActivity = Intent(applicationContext, DashboardActivity::class.java)
-                    startActivity(dashboardActivity)
-                    finish()
                 }
                 return super.parseNetworkResponse(response)
             }
@@ -113,6 +109,10 @@ class LoginActivity : AppCompatActivity() {
                 val userJson = response.toString()
                 val type: Type = object : TypeToken<GlobalUsers.Users>() {}.type
                 globalUsers.users = Gson().fromJson(userJson, type)
+
+                val dashboardActivity = Intent(applicationContext, DashboardActivity::class.java)
+                startActivity(dashboardActivity)
+                finish()
             },
             Response.ErrorListener { error ->
                 println("Current user ERR: $error")
