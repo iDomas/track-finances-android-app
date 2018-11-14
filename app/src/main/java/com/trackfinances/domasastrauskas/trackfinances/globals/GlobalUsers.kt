@@ -8,8 +8,8 @@ class GlobalUsers {
             return allUsers!!
         }
 
-        var users: Users? = null
-        fun getUser(): Users {
+        var users: String? = null
+        fun getUser(): String {
             return users!!
         }
     }

@@ -17,13 +17,11 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.trackfinances.domasastrauskas.trackfinances.globals.AuthToken
 import com.trackfinances.domasastrauskas.trackfinances.globals.GlobalUsers
 import com.trackfinances.domasastrauskas.trackfinances.model.UserAuth
 import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONObject
-import java.lang.reflect.Type
 
 class LoginActivity : AppCompatActivity() {
 
@@ -107,8 +105,8 @@ class LoginActivity : AppCompatActivity() {
             Response.Listener<JSONObject> { response ->
                 println("Current user resp: $response")
                 val userJson = response.toString()
-                val type: Type = object : TypeToken<GlobalUsers.Users>() {}.type
-                globalUsers.users = Gson().fromJson(userJson, type)
+//                val type: Type = object : TypeToken<GlobalUsers.Users>() {}.type
+                globalUsers.users = userJson
 
                 val dashboardActivity = Intent(applicationContext, DashboardActivity::class.java)
                 startActivity(dashboardActivity)
