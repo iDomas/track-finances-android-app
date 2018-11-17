@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -69,9 +71,19 @@ class DashboardActivity : AppCompatActivity() {
 
     public fun addExpense(view: View) {
         val builder = AlertDialog.Builder(this)
-        builder.setView(layoutInflater.inflate(R.layout.add_expense, null))
+
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.add_expense, findViewById(android.R.id.content), false)
+
+        val title = viewInflated.findViewById(R.id.addExpenseTitle) as EditText
+        val price = viewInflated.findViewById(R.id.addExpensePrice) as EditText
+        val description = viewInflated.findViewById(R.id.addExpenseDescription) as EditText
+
+        builder.setView(viewInflated)
             .setPositiveButton(R.string.addExpenseDialogAdd, DialogInterface.OnClickListener { dialog, which ->
-                //
+                println("Expense title: ${title.text}")
+                println("Expense price: ${price.text}")
+                println("Expense description: ${description.text}")
             })
             .setNegativeButton(R.string.addExpenseDialogCancel, DialogInterface.OnClickListener { dialog, which ->
                 //

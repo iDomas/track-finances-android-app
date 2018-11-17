@@ -10,7 +10,7 @@
 
     <!-- Title -->
     <EditText
-            android:id="@+id/expenseTitle"
+            android:id="@+id/addExpenseTitle"
             android:hint="@string/expenseTitle"
             android:inputType="text"
             android:layout_width="match_parent"
@@ -18,7 +18,7 @@
 
     <!-- Price -->
     <EditText
-            android:id="@+id/expensePrice"
+            android:id="@+id/addExpensePrice"
             android:hint="@string/expensePrice"
             android:inputType="numberDecimal"
             android:layout_width="match_parent"
@@ -26,7 +26,7 @@
 
     <!-- Description -->
     <EditText
-            android:id="@+id/expenseDescription"
+            android:id="@+id/addExpenseDescription"
             android:hint="@string/expenseDescription"
             android:inputType="text"
             android:layout_width="match_parent"
