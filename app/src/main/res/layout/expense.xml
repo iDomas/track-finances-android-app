@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+>
+
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <!--// title-->
+        <TextView
+                android:id="@+id/expenseTitle"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"/>
+
+        <!--// price-->
+        <TextView
+                android:id="@+id/expensePrice"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <!--// description-->
+    <TextView
+            android:id="@+id/expenseDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>
