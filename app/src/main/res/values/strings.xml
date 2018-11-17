@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">TrackFinances</string>
     <string name="backendUrl">http://192.168.8.108:8080</string>
+    <string name="expenseTitle">Title</string>
+    <string name="expensePrice">Price</string>
+    <string name="expenseDescription">Description</string>
+    <string name="addExpenseDialogAdd">Add</string>
+    <string name="addExpenseDialogCancel">Cancel</string>
 </resources>

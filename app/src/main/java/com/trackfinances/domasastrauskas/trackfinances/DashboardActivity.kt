@@ -1,8 +1,11 @@
 package com.trackfinances.domasastrauskas.trackfinances
 
+import android.content.DialogInterface
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -47,7 +50,6 @@ class DashboardActivity : AppCompatActivity() {
 
         val allExpensesRequest = object : JsonArrayRequest(Request.Method.GET, allExpensesUrl, null,
             Response.Listener<JSONArray> { response ->
-                println("Expenses by user id: $response")
                 val type: Type = object : TypeToken<ArrayList<Expenses>>() {}.type
                 expenses = Gson().fromJson(response.toString(), type)
                 initExpensesRecyclerView(expenses)
@@ -65,8 +67,15 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue!!.add(allExpensesRequest);
     }
 
-    private fun addExpense(userId: Long) {
-
+    public fun addExpense(view: View) {
+        val builder = AlertDialog.Builder(this)
+        builder.setView(layoutInflater.inflate(R.layout.add_expense, null))
+            .setPositiveButton(R.string.addExpenseDialogAdd, DialogInterface.OnClickListener { dialog, which ->
+                //
+            })
+            .setNegativeButton(R.string.addExpenseDialogCancel, DialogInterface.OnClickListener { dialog, which ->
+                //
+            }).create().show()
     }
 
     private fun initExpensesRecyclerView(expenses: ArrayList<Expenses>) {
