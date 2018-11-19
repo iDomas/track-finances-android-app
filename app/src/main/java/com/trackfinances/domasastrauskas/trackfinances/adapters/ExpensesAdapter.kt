@@ -5,23 +5,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import com.trackfinances.domasastrauskas.trackfinances.ClickListener
 import com.trackfinances.domasastrauskas.trackfinances.R
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
+import java.lang.ref.WeakReference
 
-class ExpensesAdapter(val expenses: ArrayList<Expenses>) : RecyclerView.Adapter<ExpensesAdapter.ViewHolder>() {
+class ExpensesAdapter(val expenses: ArrayList<Expenses>, val listener: ClickListener) :
+    RecyclerView.Adapter<ExpensesAdapter.ViewHolder>() {
 
+    private val mListener: ClickListener = listener;
     private val mExpenses: ArrayList<Expenses> = expenses;
 
-    inner class ViewHolder(val itemVIew: View) : RecyclerView.ViewHolder(itemVIew) {
-
+    inner class ViewHolder(val itemVIew: View, val listener: ClickListener) : RecyclerView.ViewHolder(itemVIew),
+        View.OnClickListener {
         val expenseTitle: TextView
         val expensePrice: TextView
         val expenseDescription: TextView
+        private val listenerRef: WeakReference<ClickListener>;
 
         init {
+            listenerRef = WeakReference<ClickListener>(listener)
             expenseTitle = itemVIew.findViewById(R.id.expenseTitle)
             expensePrice = itemVIew.findViewById(R.id.expensePrice)
             expenseDescription = itemVIew.findViewById(R.id.expenseDescription)
+
+            expenseTitle.setOnClickListener(this)
+            expensePrice.setOnClickListener(this)
+            expenseDescription.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            Toast.makeText(v!!.context, "Item pressed", Toast.LENGTH_SHORT).show()
+
+            listenerRef.get()!!.onPositionClicked(adapterPosition)
         }
 
     }
@@ -29,7 +46,7 @@ class ExpensesAdapter(val expenses: ArrayList<Expenses>) : RecyclerView.Adapter<
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val expenseView = inflater.inflate(R.layout.expense, parent, false)
-        return ViewHolder(expenseView)
+        return ViewHolder(expenseView, mListener)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {

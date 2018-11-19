@@ -75,7 +75,13 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun initExpensesRecyclerView(expenses: ArrayList<Expenses>) {
-        val expensesAdapter = ExpensesAdapter(expenses)
+        val expensesAdapter = ExpensesAdapter(expenses, object : ClickListener {
+            override fun onPositionClicked(position: Int) {
+                // TODO here hose editing pop up
+                Toast.makeText(applicationContext, "Here will be expense editing", Toast.LENGTH_SHORT).show()
+            }
+
+        })
         expensesRecyclerView.adapter = expensesAdapter
         expensesRecyclerView.layoutManager = LinearLayoutManager(this)
     }
@@ -132,6 +138,10 @@ class DashboardActivity : AppCompatActivity() {
             }
 
         volleyQueue?.add(expenseRequest)
+    }
+
+    private fun editExpense() {
+
     }
 
 }
