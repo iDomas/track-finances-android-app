@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.Request
@@ -24,6 +25,7 @@ import com.trackfinances.domasastrauskas.trackfinances.model.Expense
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
 import com.trackfinances.domasastrauskas.trackfinances.model.Users
 import kotlinx.android.synthetic.main.activity_dashboard.*
+import kotlinx.android.synthetic.main.expense.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Type
@@ -76,9 +78,16 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun initExpensesRecyclerView(expenses: ArrayList<Expenses>) {
         val expensesAdapter = ExpensesAdapter(expenses, object : ClickListener {
-            override fun onPositionClicked(position: Int) {
+            override fun onPositionClicked(position: Int, v: View) {
                 // TODO here hose editing pop up
-                Toast.makeText(applicationContext, "Here will be expense editing", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Here will be expense details", Toast.LENGTH_SHORT).show()
+                if (v is Button) {
+                    if (v.buttonEditExpense != null) {
+                        Toast.makeText(applicationContext, "Edit button clicked", Toast.LENGTH_SHORT).show()
+                    } else if (v.buttonDeleteExpense != null) {
+                        Toast.makeText(applicationContext, "Delete button clicked", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         })
@@ -86,7 +95,7 @@ class DashboardActivity : AppCompatActivity() {
         expensesRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    public fun addExpense(view: View) {
+    fun addExpense(view: View) {
         val builder = AlertDialog.Builder(this)
 
         val viewInflated =
@@ -140,8 +149,12 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue?.add(expenseRequest)
     }
 
-    private fun editExpense() {
+    fun editExpense(view: View) {
+        Toast.makeText(applicationContext, "Here will be edit expense.", Toast.LENGTH_SHORT).show();
+    }
 
+    fun deleteExpense(view: View) {
+        Toast.makeText(applicationContext, "Here will be delete expense.", Toast.LENGTH_SHORT).show();
     }
 
 }
