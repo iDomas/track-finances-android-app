@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <!-- Title -->
+    <EditText
+        android:id="@+id/editExpenseTitle"
+        android:hint="@string/expenseTitle"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Price -->
+    <EditText
+        android:id="@+id/editExpensePrice"
+        android:hint="@string/expensePrice"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Description -->
+    <EditText
+        android:id="@+id/editExpenseDescription"
+        android:hint="@string/expenseDescription"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -25,6 +26,7 @@ import com.trackfinances.domasastrauskas.trackfinances.model.Expense
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
 import com.trackfinances.domasastrauskas.trackfinances.model.Users
 import kotlinx.android.synthetic.main.activity_dashboard.*
+import kotlinx.android.synthetic.main.edit_expense.view.*
 import kotlinx.android.synthetic.main.expense.view.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -32,6 +34,8 @@ import java.lang.reflect.Type
 import java.math.BigDecimal
 
 class DashboardActivity : AppCompatActivity() {
+
+    private val TAG: String = "DASHBOARD ACTIVITY";
 
     private val globalAuthToken = AuthToken.Token
     private val globalUsers = GlobalUsers.Users
@@ -84,6 +88,7 @@ class DashboardActivity : AppCompatActivity() {
                 if (v is Button) {
                     if (v.buttonEditExpense != null) {
                         Toast.makeText(applicationContext, "Edit button clicked", Toast.LENGTH_SHORT).show()
+                        editExpense(position)
                     } else if (v.buttonDeleteExpense != null) {
                         Toast.makeText(applicationContext, "Delete button clicked", Toast.LENGTH_SHORT).show()
                     }
@@ -112,6 +117,37 @@ class DashboardActivity : AppCompatActivity() {
             .setNegativeButton(R.string.addExpenseDialogCancel, DialogInterface.OnClickListener { dialog, which ->
                 //
             }).create().show()
+    }
+
+    private fun editExpense(position: Int) {
+        val builder = AlertDialog.Builder(this)
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.edit_expense, findViewById(R.id.content), false)
+
+        val title = viewInflated.editExpenseTitle as EditText
+        val price = viewInflated.editExpensePrice as EditText
+        val description = viewInflated.editExpenseDescription as EditText
+
+        title.setText(expenses[position].title)
+        price.setText(String.format("%.2f", expenses[position].price))
+        description.setText(expenses[position].description)
+
+        builder.setView(viewInflated)
+            .setPositiveButton(getString(R.string.editExpenseEdit), DialogInterface.OnClickListener { dialog, which ->
+                updateExpenseInDB(
+                    position,
+                    title.text.toString(),
+                    BigDecimal(price.text.toString()),
+                    description.text.toString()
+                )
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                Log.i(TAG, "Edit canceled");
+            }).create().show()
+    }
+
+    private fun deleteExpense() {
+
     }
 
     private fun sendExpenseToDB(title: String, price: BigDecimal, description: String) {
@@ -149,12 +185,8 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue?.add(expenseRequest)
     }
 
-    fun editExpense(view: View) {
-        Toast.makeText(applicationContext, "Here will be edit expense.", Toast.LENGTH_SHORT).show();
-    }
-
-    fun deleteExpense(view: View) {
-        Toast.makeText(applicationContext, "Here will be delete expense.", Toast.LENGTH_SHORT).show();
+    private fun updateExpenseInDB(expenseId: Int, title: String, price: BigDecimal, description: String) {
+        Log.i(TAG, "Expense ID: $expenseId, Title: $title, Price: $price, Description: $description")
     }
 
 }

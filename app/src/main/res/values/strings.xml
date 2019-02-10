@@ -6,4 +6,7 @@
     <string name="expenseDescription">Description</string>
     <string name="addExpenseDialogAdd">Add</string>
     <string name="addExpenseDialogCancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="delete">x</string>
+    <string name="editExpenseEdit">Edit</string>
 </resources>
