@@ -87,10 +87,9 @@ class DashboardActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Here will be expense details", Toast.LENGTH_SHORT).show()
                 if (v is Button) {
                     if (v.buttonEditExpense != null) {
-                        Toast.makeText(applicationContext, "Edit button clicked", Toast.LENGTH_SHORT).show()
                         editExpense(position)
                     } else if (v.buttonDeleteExpense != null) {
-                        Toast.makeText(applicationContext, "Delete button clicked", Toast.LENGTH_SHORT).show()
+                        deleteExpense(position)
                     }
                 }
             }
@@ -143,12 +142,22 @@ class DashboardActivity : AppCompatActivity() {
                 )
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
-                Log.i(TAG, "Edit canceled");
+                Toast.makeText(applicationContext, "Edit canceled", Toast.LENGTH_SHORT).show()
             }).create().show()
     }
 
-    private fun deleteExpense() {
+    private fun deleteExpense(position: Int) {
+        val builder = AlertDialog.Builder(this)
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.delete_expense, findViewById(R.id.content), false)
 
+        builder.setView(viewInflated)
+            .setPositiveButton("Delete", DialogInterface.OnClickListener { dialog, which ->
+                deleteExpenseInDB(expenses[position].id, position)
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                Toast.makeText(applicationContext, "Delete canceled", Toast.LENGTH_SHORT).show()
+            }).create().show()
     }
 
     private fun sendExpenseToDB(title: String, price: BigDecimal, description: String) {
@@ -193,7 +202,6 @@ class DashboardActivity : AppCompatActivity() {
         price: BigDecimal,
         description: String
     ) {
-        Log.i(TAG, "Expense ID: $expenseId, Title: $title, Price: $price, Description: $description")
         val userId = Gson().fromJson(globalUsers.getUser(), Users::class.java).id
         val expense: Expense = Expense(userId, title, price, description)
 
@@ -228,4 +236,29 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue?.add(expenseUpdateRequest);
     }
 
+    private fun deleteExpenseInDB(expenseId: Long, expensePositionInArray: Int) {
+        val expenseDeleteUrl = getString(R.string.backendUrl) + "/expenses/" + expenseId
+        val volleyQueue: RequestQueue? = Volley.newRequestQueue(applicationContext)
+
+        val expensesDeleteRequest =
+            object : JsonObjectRequest(Request.Method.DELETE, expenseDeleteUrl, null,
+                Response.Listener<JSONObject> { response ->
+                    Log.i(TAG, "Successfully deleted expense.")
+                    expenses.remove(expenses[expensePositionInArray]);
+                    initExpensesRecyclerView(expenses)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "Error deleting expense: $error")
+                }
+            ) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Authorization"] = globalAuthToken.getToken()
+
+                    return headers
+                }
+            }
+
+        volleyQueue?.add(expensesDeleteRequest)
+    }
 }
