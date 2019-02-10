@@ -4,11 +4,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.trackfinances.domasastrauskas.trackfinances.ClickListener
 import com.trackfinances.domasastrauskas.trackfinances.R
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
+import kotlinx.android.synthetic.main.expense.view.*
 import java.lang.ref.WeakReference
 
 class ExpensesAdapter(val expenses: ArrayList<Expenses>, val listener: ClickListener) :
@@ -22,6 +24,8 @@ class ExpensesAdapter(val expenses: ArrayList<Expenses>, val listener: ClickList
         val expenseTitle: TextView
         val expensePrice: TextView
         val expenseDescription: TextView
+        val editButton: Button
+        val deleteButton: Button
         private val listenerRef: WeakReference<ClickListener>;
 
         init {
@@ -29,16 +33,20 @@ class ExpensesAdapter(val expenses: ArrayList<Expenses>, val listener: ClickList
             expenseTitle = itemVIew.findViewById(R.id.expenseTitle)
             expensePrice = itemVIew.findViewById(R.id.expensePrice)
             expenseDescription = itemVIew.findViewById(R.id.expenseDescription)
+            editButton = itemVIew.buttonEditExpense
+            deleteButton = itemVIew.buttonDeleteExpense
 
             expenseTitle.setOnClickListener(this)
             expensePrice.setOnClickListener(this)
             expenseDescription.setOnClickListener(this)
+            editButton.setOnClickListener(this)
+            deleteButton.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
             Toast.makeText(v!!.context, "Item pressed", Toast.LENGTH_SHORT).show()
 
-            listenerRef.get()!!.onPositionClicked(adapterPosition)
+            listenerRef.get()!!.onPositionClicked(adapterPosition, v)
         }
 
     }

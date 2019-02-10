@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.Request
@@ -24,12 +26,16 @@ import com.trackfinances.domasastrauskas.trackfinances.model.Expense
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
 import com.trackfinances.domasastrauskas.trackfinances.model.Users
 import kotlinx.android.synthetic.main.activity_dashboard.*
+import kotlinx.android.synthetic.main.edit_expense.view.*
+import kotlinx.android.synthetic.main.expense.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Type
 import java.math.BigDecimal
 
 class DashboardActivity : AppCompatActivity() {
+
+    private val TAG: String = "DASHBOARD ACTIVITY";
 
     private val globalAuthToken = AuthToken.Token
     private val globalUsers = GlobalUsers.Users
@@ -76,9 +82,16 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun initExpensesRecyclerView(expenses: ArrayList<Expenses>) {
         val expensesAdapter = ExpensesAdapter(expenses, object : ClickListener {
-            override fun onPositionClicked(position: Int) {
+            override fun onPositionClicked(position: Int, v: View) {
                 // TODO here hose editing pop up
-                Toast.makeText(applicationContext, "Here will be expense editing", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Here will be expense details", Toast.LENGTH_SHORT).show()
+                if (v is Button) {
+                    if (v.buttonEditExpense != null) {
+                        editExpense(position)
+                    } else if (v.buttonDeleteExpense != null) {
+                        deleteExpense(position)
+                    }
+                }
             }
 
         })
@@ -86,7 +99,7 @@ class DashboardActivity : AppCompatActivity() {
         expensesRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    public fun addExpense(view: View) {
+    fun addExpense(view: View) {
         val builder = AlertDialog.Builder(this)
 
         val viewInflated =
@@ -102,6 +115,48 @@ class DashboardActivity : AppCompatActivity() {
             })
             .setNegativeButton(R.string.addExpenseDialogCancel, DialogInterface.OnClickListener { dialog, which ->
                 //
+            }).create().show()
+    }
+
+    private fun editExpense(position: Int) {
+        val builder = AlertDialog.Builder(this)
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.edit_expense, findViewById(R.id.content), false)
+
+        val title = viewInflated.editExpenseTitle as EditText
+        val price = viewInflated.editExpensePrice as EditText
+        val description = viewInflated.editExpenseDescription as EditText
+
+        title.setText(expenses[position].title)
+        price.setText(String.format("%.2f", expenses[position].price))
+        description.setText(expenses[position].description)
+
+        builder.setView(viewInflated)
+            .setPositiveButton(getString(R.string.editExpenseEdit), DialogInterface.OnClickListener { dialog, which ->
+                updateExpenseInDB(
+                    position,
+                    expenses[position].id,
+                    title.text.toString(),
+                    BigDecimal(price.text.toString()),
+                    description.text.toString()
+                )
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                Toast.makeText(applicationContext, "Edit canceled", Toast.LENGTH_SHORT).show()
+            }).create().show()
+    }
+
+    private fun deleteExpense(position: Int) {
+        val builder = AlertDialog.Builder(this)
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.delete_expense, findViewById(R.id.content), false)
+
+        builder.setView(viewInflated)
+            .setPositiveButton("Delete", DialogInterface.OnClickListener { dialog, which ->
+                deleteExpenseInDB(expenses[position].id, position)
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                Toast.makeText(applicationContext, "Delete canceled", Toast.LENGTH_SHORT).show()
             }).create().show()
     }
 
@@ -121,7 +176,7 @@ class DashboardActivity : AppCompatActivity() {
                     initExpensesRecyclerView(expenses)
                 },
                 Response.ErrorListener { error ->
-                    println("Inserting expense ERR: $error")
+                    Log.e(TAG, "Error editing: $error")
                 }
             ) {
                 override fun getHeaders(): MutableMap<String, String> {
@@ -140,8 +195,70 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue?.add(expenseRequest)
     }
 
-    private fun editExpense() {
+    private fun updateExpenseInDB(
+        expensePosition: Int,
+        expenseId: Long,
+        title: String,
+        price: BigDecimal,
+        description: String
+    ) {
+        val userId = Gson().fromJson(globalUsers.getUser(), Users::class.java).id
+        val expense: Expense = Expense(userId, title, price, description)
 
+        val expenseUpdateUrl = getString(R.string.backendUrl) + "/expenses/" + expenseId
+        val volleyQueue: RequestQueue? = Volley.newRequestQueue(applicationContext)
+
+        val expenseUpdateRequest =
+            object : JsonObjectRequest(Request.Method.PUT, expenseUpdateUrl, null,
+                Response.Listener<JSONObject> { response ->
+                    Log.i(TAG, "Successfully updated")
+                    val expense = Gson().fromJson(response.toString(), Expenses::class.java)
+                    expenses[expensePosition] = expense
+                    initExpensesRecyclerView(expenses)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "Error updating: $error")
+                }
+            ) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Authorization"] = globalAuthToken.getToken()
+
+                    return headers
+                }
+
+                override fun getBody(): ByteArray {
+                    val expenseToJson = Gson().toJson(expense)
+                    return expenseToJson.toByteArray()
+                }
+            }
+
+        volleyQueue?.add(expenseUpdateRequest);
     }
 
+    private fun deleteExpenseInDB(expenseId: Long, expensePositionInArray: Int) {
+        val expenseDeleteUrl = getString(R.string.backendUrl) + "/expenses/" + expenseId
+        val volleyQueue: RequestQueue? = Volley.newRequestQueue(applicationContext)
+
+        val expensesDeleteRequest =
+            object : JsonObjectRequest(Request.Method.DELETE, expenseDeleteUrl, null,
+                Response.Listener<JSONObject> { response ->
+                    Log.i(TAG, "Successfully deleted expense.")
+                    expenses.remove(expenses[expensePositionInArray]);
+                    initExpensesRecyclerView(expenses)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "Error deleting expense: $error")
+                }
+            ) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Authorization"] = globalAuthToken.getToken()
+
+                    return headers
+                }
+            }
+
+        volleyQueue?.add(expensesDeleteRequest)
+    }
 }
