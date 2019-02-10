@@ -136,6 +136,7 @@ class DashboardActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.editExpenseEdit), DialogInterface.OnClickListener { dialog, which ->
                 updateExpenseInDB(
                     position,
+                    expenses[position].id,
                     title.text.toString(),
                     BigDecimal(price.text.toString()),
                     description.text.toString()
@@ -166,7 +167,7 @@ class DashboardActivity : AppCompatActivity() {
                     initExpensesRecyclerView(expenses)
                 },
                 Response.ErrorListener { error ->
-                    println("Inserting expense ERR: $error")
+                    Log.e(TAG, "Error editing: $error")
                 }
             ) {
                 override fun getHeaders(): MutableMap<String, String> {
@@ -185,8 +186,46 @@ class DashboardActivity : AppCompatActivity() {
         volleyQueue?.add(expenseRequest)
     }
 
-    private fun updateExpenseInDB(expenseId: Int, title: String, price: BigDecimal, description: String) {
+    private fun updateExpenseInDB(
+        expensePosition: Int,
+        expenseId: Long,
+        title: String,
+        price: BigDecimal,
+        description: String
+    ) {
         Log.i(TAG, "Expense ID: $expenseId, Title: $title, Price: $price, Description: $description")
+        val userId = Gson().fromJson(globalUsers.getUser(), Users::class.java).id
+        val expense: Expense = Expense(userId, title, price, description)
+
+        val expenseUpdateUrl = getString(R.string.backendUrl) + "/expenses/" + expenseId
+        val volleyQueue: RequestQueue? = Volley.newRequestQueue(applicationContext)
+
+        val expenseUpdateRequest =
+            object : JsonObjectRequest(Request.Method.PUT, expenseUpdateUrl, null,
+                Response.Listener<JSONObject> { response ->
+                    Log.i(TAG, "Successfully updated")
+                    val expense = Gson().fromJson(response.toString(), Expenses::class.java)
+                    expenses[expensePosition] = expense
+                    initExpensesRecyclerView(expenses)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "Error updating: $error")
+                }
+            ) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Authorization"] = globalAuthToken.getToken()
+
+                    return headers
+                }
+
+                override fun getBody(): ByteArray {
+                    val expenseToJson = Gson().toJson(expense)
+                    return expenseToJson.toByteArray()
+                }
+            }
+
+        volleyQueue?.add(expenseUpdateRequest);
     }
 
 }
