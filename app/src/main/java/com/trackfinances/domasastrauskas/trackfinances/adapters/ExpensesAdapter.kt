@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import com.trackfinances.domasastrauskas.trackfinances.ClickListener
 import com.trackfinances.domasastrauskas.trackfinances.R
 import com.trackfinances.domasastrauskas.trackfinances.model.Expenses
@@ -43,9 +42,8 @@ class ExpensesAdapter(val expenses: ArrayList<Expenses>, val listener: ClickList
             deleteButton.setOnClickListener(this)
         }
 
-        override fun onClick(v: View?) {
-            Toast.makeText(v!!.context, "Item pressed", Toast.LENGTH_SHORT).show()
-
+        override fun onClick(v: View) {
+//            Toast.makeText(v!!.context, "Item pressed", Toast.LENGTH_SHORT).show()
             listenerRef.get()!!.onPositionClicked(adapterPosition, v)
         }
 

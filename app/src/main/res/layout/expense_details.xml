@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/detailsExpenseTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Price -->
+    <TextView
+        android:id="@+id/detailsExpensePrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/detailsExpenseDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

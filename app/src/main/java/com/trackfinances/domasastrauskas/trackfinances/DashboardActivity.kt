@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -28,6 +29,7 @@ import com.trackfinances.domasastrauskas.trackfinances.model.Users
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.edit_expense.view.*
 import kotlinx.android.synthetic.main.expense.view.*
+import kotlinx.android.synthetic.main.expense_details.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Type
@@ -84,13 +86,17 @@ class DashboardActivity : AppCompatActivity() {
         val expensesAdapter = ExpensesAdapter(expenses, object : ClickListener {
             override fun onPositionClicked(position: Int, v: View) {
                 // TODO here hose editing pop up
-                Toast.makeText(applicationContext, "Here will be expense details", Toast.LENGTH_SHORT).show()
                 if (v is Button) {
                     if (v.buttonEditExpense != null) {
                         editExpense(position)
                     } else if (v.buttonDeleteExpense != null) {
                         deleteExpense(position)
                     }
+                }
+
+                if (v is TextView && v !is Button) {
+//                    Toast.makeText(applicationContext, "Here will be expense details", Toast.LENGTH_SHORT).show()
+                    viewExpenseDetails(expenses[position])
                 }
             }
 
@@ -157,6 +163,25 @@ class DashboardActivity : AppCompatActivity() {
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
                 Toast.makeText(applicationContext, "Delete canceled", Toast.LENGTH_SHORT).show()
+            }).create().show()
+    }
+
+    private fun viewExpenseDetails(expense: Expenses) {
+        val builder = AlertDialog.Builder(this)
+        val viewInflated =
+            LayoutInflater.from(this).inflate(R.layout.expense_details, findViewById(R.id.content), false)
+
+        val title = viewInflated.detailsExpenseTitle as TextView
+        val price = viewInflated.detailsExpensePrice as TextView
+        val description = viewInflated.detailsExpenseDescription as TextView
+
+        title.setText(expense.title)
+        price.setText(String.format("%.2f", expense.price))
+        description.setText(expense.description)
+
+        builder.setView(viewInflated)
+            .setNegativeButton("Close", DialogInterface.OnClickListener { dialog, which ->
+                Toast.makeText(applicationContext, "Details view closed.", Toast.LENGTH_SHORT).show()
             }).create().show()
     }
 
