@@ -1,27 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".SignUpActivity">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUpActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="18dp"
+        android:onClick="goBack"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/enterUsername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:ems="10"
+        android:hint="Username"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/enterPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameWarning" />
+
+    <EditText
+        android:id="@+id/retypePassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="Retype password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwrodWarning" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="137dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="137dp"
+        android:onClick="signUp"
+        android:text="Sign Up"
+        app:layout_constraintEnd_toEndOf="@+id/enterPassword"
+        app:layout_constraintStart_toStartOf="@+id/secondPasswordWarning"
+        app:layout_constraintTop_toBottomOf="@+id/retypePassword" />
 
     <TextView
-            android:text="Currently not implemented"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:id="@+id/textView" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="9dp" android:layout_marginEnd="9dp" android:textAlignment="center"
-            android:layout_marginTop="242dp" android:layout_marginBottom="176dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonBack"/>
-    <Button
-            android:text="Back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/buttonBack"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/textView"
-            android:layout_marginEnd="18dp" android:layout_marginBottom="18dp"
-            app:layout_constraintEnd_toEndOf="parent" android:onClick="goBack"/>
+        android:id="@+id/usernameWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here goes warning"
+        app:layout_constraintStart_toStartOf="@+id/enterUsername"
+        app:layout_constraintTop_toBottomOf="@+id/enterUsername" />
+
+    <TextView
+        android:id="@+id/passwrodWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="here goes another warning"
+        app:layout_constraintStart_toStartOf="@+id/enterPassword"
+        app:layout_constraintTop_toBottomOf="@+id/enterPassword" />
+
+    <TextView
+        android:id="@+id/secondPasswordWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="Last worning"
+        app:layout_constraintStart_toStartOf="@+id/retypePassword"
+        app:layout_constraintTop_toBottomOf="@+id/retypePassword" />
 </android.support.constraint.ConstraintLayout>
