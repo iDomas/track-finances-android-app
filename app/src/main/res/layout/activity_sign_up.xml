@@ -75,7 +75,6 @@
         android:id="@+id/usernameWarning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Here goes warning"
         app:layout_constraintStart_toStartOf="@+id/enterUsername"
         app:layout_constraintTop_toBottomOf="@+id/enterUsername" />
 
